@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>World Flag Championship - Country Cup 2026</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div id="stream-container" class="container arena">
+    <!-- Header / HUD: Sports & Arcade Championship -->
+    <header id="hud-header">
+      <div class="title-bar">
+        <div class="title-and-status">
+          <h1>🏆 WORLD FLAG CHAMPIONSHIP</h1>
+          <span class="live-mode-badge badge-skirmish" id="live-mode-badge">⚔️ LIVE SKIRMISH</span>
+        </div>
+        <div class="timer-badge" id="round-timer">03:00</div>
+      </div>
+
+      <!-- Territory / Score progress bars -->
+      <div class="territory-bars">
+        <div id="bar-usa" class="bar-team bar-usa" style="width: 25%;"></div>
+        <div id="bar-uk" class="bar-team bar-uk" style="width: 25%;"></div>
+        <div id="bar-mexico" class="bar-team bar-mexico" style="width: 25%;"></div>
+        <div id="bar-brazil" class="bar-team bar-brazil" style="width: 25%;"></div>
+      </div>
+
+      <!-- 4 Country Cards -->
+      <div class="teams-grid">
+        <div class="team-card team-usa">
+          <div class="team-header-info">
+            <span class="team-flag">🇺🇸</span>
+            <span class="team-name" style="color: #4da3ff;">USA</span>
+          </div>
+          <span class="team-pct" id="pct-usa">25%</span>
+          <span class="team-cmd">1 or usa</span>
+        </div>
+
+        <div class="team-card team-uk">
+          <div class="team-header-info">
+            <span class="team-flag">🇬🇧</span>
+            <span class="team-name" style="color: #ff4d6d;">UK</span>
+          </div>
+          <span class="team-pct" id="pct-uk">25%</span>
+          <span class="team-cmd">2 or uk</span>
+        </div>
+
+        <div class="team-card team-mexico">
+          <div class="team-header-info">
+            <span class="team-flag">🇲🇽</span>
+            <span class="team-name" style="color: #2ec4b6;">Mexico</span>
+          </div>
+          <span class="team-pct" id="pct-mexico">25%</span>
+          <span class="team-cmd">3 or mexico</span>
+        </div>
+
+        <div class="team-card team-brazil">
+          <div class="team-header-info">
+            <span class="team-flag">🇧🇷</span>
+            <span class="team-name" style="color: var(--color-brazil);">Brazil</span>
+          </div>
+          <span class="team-pct" id="pct-brazil">25%</span>
+          <span class="team-cmd">4 or brazil</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Canvas Game Arena -->
+    <main id="game-stage">
+      <canvas id="battle-canvas"></canvas>
+
+      <!-- Minor Gift Alert Banner -->
+      <div id="alert-banner">
+        <span class="alert-icon" id="alert-icon">⭐</span>
+        <div class="alert-text">
+          <span class="alert-user" id="alert-user">@viewer</span>
+          <span class="alert-desc" id="alert-desc">Sent Rose (+1 Diamond)!</span>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- ANIME POWER CUT-IN CARD (SUPER SAIYAN MANGA STYLE)      -->
+      <!-- ======================================================== -->
+      <div id="anime-cutin-overlay">
+        <div class="cutin-flash" id="cutin-flash"></div>
+        <div class="cutin-speedlines"></div>
+        <div class="cutin-panels-wrapper">
+          <!-- Top Panel: Eye close-up slit & comic SFX -->
+          <div class="cutin-panel-top" id="cutin-panel-top">
+            <div class="cutin-top-content">
+              <div id="cutin-top-art" style="width:100%; height:100%;"></div>
+              <div class="cutin-sfx-text" id="cutin-sfx">BOOOM!</div>
+            </div>
+          </div>
+
+          <!-- Bottom Panel: Charging Champion Hero pose with energy aura -->
+          <div class="cutin-panel-main" id="cutin-panel-main">
+            <div class="cutin-hero-art" id="cutin-hero-art"></div>
+            <div class="cutin-caption-box">
+              <div class="cutin-quote" id="cutin-quote">“CHAMPION SUPER SHOT!”</div>
+              <div class="cutin-subquote" id="cutin-subquote">@viewer activated Gift (100 💎)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Victory Overlay -->
+      <div id="victory-overlay">
+        <h2 class="victory-title" id="victory-team-text">🏆 CHAMPIONS!</h2>
+        <p class="victory-subtitle" id="victory-team-sub">Has won the World Flag Championship!</p>
+        <span class="restart-countdown" id="restart-countdown">Next round in 10s...</span>
+      </div>
+    </main>
+
+    <!-- Footer: Stream Rules & Interaction Guide + Dynamic Live Ticker -->
+    <footer id="stream-footer">
+      <div id="live-cta-ticker" class="cta-ticker-container">
+        <span class="ticker-icon" id="ticker-icon">💬</span>
+        <span class="ticker-badge" id="ticker-badge">CHAT</span>
+        <span class="ticker-text" id="ticker-text">Comment 1, 2, 3 or 4 to spawn runner troops!</span>
+      </div>
+      <div class="stream-guide">
+        <div class="guide-item">
+          <span class="guide-key">💬 CHAT</span>
+          <span id="guide-chat-text">Pick flag (1, 2, 3, 4)</span>
+        </div>
+        <div class="guide-item">
+          <span class="guide-key">❤️ TAPS</span>
+          <span id="guide-taps-text">Score & expand</span>
+        </div>
+        <div class="guide-item">
+          <span class="guide-key">🎁 GIFTS</span>
+          <span id="guide-gifts-text">Super Power Shots!</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Floating Test Button -->
+  <button id="btn-toggle-sim" class="toggle-sim-fab">
+    <span>🛠️ Test Panel</span>
+  </button>
+
+  <!-- Simulation & Control Panel (Hideable with H key) -->
+  <aside id="simulator-panel" class="hidden">
+    <div class="sim-header">
+      <h3>🎮 Test Panel (Country Cup)</h3>
+      <button class="sim-btn-close" id="btn-close-sim">&times;</button>
+    </div>
+
+    <!-- Language Selector for Future Multilingual Streams -->
+    <div class="sim-section">
+      <label>🌐 Language / Idioma</label>
+      <div class="sim-btn-grid">
+        <button class="sim-btn" id="btn-lang-en" onclick="setLanguage('en')" style="border-color:#104fdf; font-weight:900;">🇺🇸 English (Active)</button>
+        <button class="sim-btn" id="btn-lang-es" onclick="setLanguage('es')">🇪🇸 Español</button>
+      </div>
+    </div>
+
+    <!-- Auto-Skirmish / Dinamismo Random (Idle Mode) -->
+    <div class="sim-section">
+      <label>🤖 Dinamismo Random (Auto-Skirmish)</label>
+      <div class="sim-btn-grid">
+        <button class="sim-btn" id="btn-toggle-ambient" onclick="toggleAmbientMode()" style="border-color:#00ff88; color:#00ff88; font-weight:900;">
+          🟢 Skirmish: ON
+        </button>
+        <button class="sim-btn" id="btn-ambient-pace" onclick="cycleAmbientIntensity()">
+          ⚡ Pace: Normal
+        </button>
+      </div>
+    </div>
+
+    <!-- Anime Cut-In Test Buttons -->
+    <div class="sim-section">
+      <label>⚡ Test Super Shots (Anime Cut-In)</label>
+      <div class="sim-btn-grid">
+        <button class="sim-btn usa" onclick="testAnimeCard('usa')">🇺🇸 Cut-In USA</button>
+        <button class="sim-btn uk" onclick="testAnimeCard('uk')">🇬🇧 Cut-In UK</button>
+        <button class="sim-btn mexico" onclick="testAnimeCard('mexico')">🇲🇽 Cut-In Mexico</button>
+        <button class="sim-btn brazil" onclick="testAnimeCard('brazil')">🇧🇷 Cut-In Brazil</button>
+      </div>
+    </div>
+
+    <!-- Simulate Likes -->
+    <div class="sim-section">
+      <label>❤️ Simulate Taps (Points)</label>
+      <div class="sim-btn-grid">
+        <button class="sim-btn usa" onclick="simulateEvent('like', 'usa', 5)">🇺🇸 +5 USA</button>
+        <button class="sim-btn uk" onclick="simulateEvent('like', 'uk', 5)">🇬🇧 +5 UK</button>
+        <button class="sim-btn mexico" onclick="simulateEvent('like', 'mexico', 5)">🇲🇽 +5 Mexico</button>
+        <button class="sim-btn brazil" onclick="simulateEvent('like', 'brazil', 5)">🇧🇷 +5 Brazil</button>
+      </div>
+    </div>
+
+    <!-- Simulate Chat Comments -->
+    <div class="sim-section">
+      <label>💬 Simulate Chat (Fans / Runners)</label>
+      <div class="sim-btn-grid">
+        <button class="sim-btn usa" onclick="simulateEvent('comment', 'usa', 1)">🇺🇸 USA Fan</button>
+        <button class="sim-btn uk" onclick="simulateEvent('comment', 'uk', 1)">🇬🇧 UK Fan</button>
+        <button class="sim-btn mexico" onclick="simulateEvent('comment', 'mexico', 1)">🇲🇽 Mexico Fan</button>
+        <button class="sim-btn brazil" onclick="simulateEvent('comment', 'brazil', 1)">🇧🇷 Brazil Fan</button>
+      </div>
+    </div>
+
+    <!-- Simulate Gifts -->
+    <div class="sim-section">
+      <label>🎁 Simulate Gifts (Power Shots)</label>
+      <div class="sim-btn-grid">
+        <button class="sim-btn" onclick="simulateRandomGift(1, 'Rose')">🌹 Rose (1 💎)</button>
+        <button class="sim-btn" onclick="simulateRandomGift(30, 'Donut')">🍩 Donut (30 💎)</button>
+        <button class="sim-btn" onclick="simulateRandomGift(100, 'Sunglasses')">🕶️ Sunglasses (100 💎)</button>
+        <button class="sim-btn" style="border-color:#ffb703; color:#ffde59;" onclick="simulateRandomGift(500, 'Dragon')">🐉 DRAGON (500 💎)</button>
+      </div>
+    </div>
+
+    <!-- General Controls -->
+    <div class="sim-section">
+      <div class="sim-btn-grid">
+        <button class="sim-btn" id="btn-toggle-sound">🔊 Sound: ON</button>
+        <button class="sim-btn" style="border-color:#ff2a5f;" onclick="resetMatch()">🔄 Reset Match</button>
+      </div>
+    </div>
+  </aside>
+
+  <script src="game.js"></script>
+</body>
+</html>

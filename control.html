@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎮 Stream Remote Control - World Flag Championship</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: #0c0e17; color: #fff; padding: 16px; max-width: 650px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #22283a; padding-bottom: 12px; margin-bottom: 16px; }
+    h1 { font-size: 1.25rem; font-weight: 800; background: linear-gradient(90deg, #104fdf, #d90429, #008751, #ffb703); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .status-badge { font-size: 0.8rem; font-weight: bold; padding: 4px 10px; border-radius: 12px; background: #ff2a5f; color: #fff; }
+    .status-badge.connected { background: #00ff88; color: #042515; }
+    .section { background: #141824; border: 1px solid #222a3d; border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+    .section-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #8a99b5; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .btn-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .btn-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    button {
+      background: #1c2336; border: 1.5px solid #2d3852; color: #fff; padding: 12px 10px; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.15s ease; display: flex;
+      align-items: center; justify-content: center; gap: 6px; text-align: center;
+    }
+    button:active { transform: scale(0.96); filter: brightness(1.2); }
+    .btn-accent { border-color: #00ff88; color: #00ff88; }
+    .btn-pace { border-color: #ffde59; color: #ffde59; }
+    .btn-reset { border-color: #ff2a5f; color: #ff4d6d; }
+    .team-col { display: flex; flex-direction: column; gap: 8px; }
+    .team-header { font-weight: 900; font-size: 0.95rem; text-align: center; padding: 6px; border-radius: 6px; }
+    .header-usa { background: rgba(16, 79, 223, 0.3); color: #4da3ff; border: 1px solid #104fdf; }
+    .header-uk { background: rgba(217, 4, 41, 0.3); color: #ff4d6d; border: 1px solid #d90429; }
+    .header-mexico { background: rgba(0, 135, 81, 0.3); color: #2ec4b6; border: 1px solid #008751; }
+    .header-brazil { background: rgba(255, 183, 3, 0.3); color: #ffde59; border: 1px solid #ffb703; }
+    .btn-mini { padding: 8px 4px; font-size: 0.78rem; }
+    .tip-box { background: rgba(255, 222, 89, 0.08); border-left: 3px solid #ffde59; padding: 10px; border-radius: 6px; font-size: 0.8rem; color: #ddd; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>🎮 Control Remoto OBS</h1>
+      <p style="font-size:0.75rem; color:#888;">World Flag Championship</p>
+    </div>
+    <span id="conn-badge" class="status-badge">Conectando...</span>
+  </header>
+
+  <!-- Auto-Skirmish / Dinamismo Controls -->
+  <div class="section">
+    <div class="section-title">⚡ Dinamismo Automático (Idle / Auto-Skirmish)</div>
+    <div class="btn-grid">
+      <button id="btn-ambient" class="btn-accent" onclick="sendControl('toggle_ambient')">
+        🟢 Skirmish: ON / OFF
+      </button>
+      <button class="btn-pace" onclick="cyclePace()">
+        ⚡ Ritmo: <span id="pace-label">Normal</span>
+      </button>
+    </div>
+    <div class="tip-box">
+      💡 <b>¿Cómo funciona?</b> Mientras nadie comente ni done, el juego mueve tropas y fronteras automáticamente para mantener el directo dinámico.
+    </div>
+  </div>
+
+  <!-- Controles Generales de Transmisión -->
+  <div class="section">
+    <div class="section-title">⚙️ Control de Partida</div>
+    <div class="btn-grid">
+      <button class="btn-reset" onclick="sendControl('reset_match')">
+        🔄 Reiniciar Partida (Reset)
+      </button>
+      <button onclick="sendControl('toggle_sound')">
+        🔊 Activar / Silenciar Audio
+      </button>
+    </div>
+  </div>
+
+  <!-- Disparador de Regalos y Poderes por País -->
+  <div class="section">
+    <div class="section-title">🎁 Pruebas Rápidas de Regalos y Poderes</div>
+    <div class="btn-grid-4">
+      <!-- USA -->
+      <div class="team-col">
+        <div class="team-header header-usa">🇺🇸 USA</div>
+        <button class="btn-mini" onclick="sendSim('comment', 'usa')">🏃 +1 Tropa</button>
+        <button class="btn-mini" onclick="sendSim('like', 'usa', 5)">❤️ +5 Taps</button>
+        <button class="btn-mini" onclick="sendGift('usa', 1, 'Rose')">🌹 Rosa</button>
+        <button class="btn-mini" onclick="sendGift('usa', 30, 'Donut')">🍩 Dona</button>
+        <button class="btn-mini" onclick="sendGift('usa', 100, 'Sunglasses')">🕶️ Gafas</button>
+      </div>
+      <!-- UK -->
+      <div class="team-col">
+        <div class="team-header header-uk">🇬🇧 UK</div>
+        <button class="btn-mini" onclick="sendSim('comment', 'uk')">🏃 +1 Tropa</button>
+        <button class="btn-mini" onclick="sendSim('like', 'uk', 5)">❤️ +5 Taps</button>
+        <button class="btn-mini" onclick="sendGift('uk', 1, 'Rose')">🌹 Rosa</button>
+        <button class="btn-mini" onclick="sendGift('uk', 30, 'Donut')">🍩 Dona</button>
+        <button class="btn-mini" onclick="sendGift('uk', 100, 'Sunglasses')">🕶️ Gafas</button>
+      </div>
+      <!-- MEXICO -->
+      <div class="team-col">
+        <div class="team-header header-mexico">🇲🇽 MEX</div>
+        <button class="btn-mini" onclick="sendSim('comment', 'mexico')">🏃 +1 Tropa</button>
+        <button class="btn-mini" onclick="sendSim('like', 'mexico', 5)">❤️ +5 Taps</button>
+        <button class="btn-mini" onclick="sendGift('mexico', 1, 'Rose')">🌹 Rosa</button>
+        <button class="btn-mini" onclick="sendGift('mexico', 30, 'Donut')">🍩 Dona</button>
+        <button class="btn-mini" onclick="sendGift('mexico', 100, 'Sunglasses')">🕶️ Gafas</button>
+      </div>
+      <!-- BRAZIL -->
+      <div class="team-col">
+        <div class="team-header header-brazil">🇧🇷 BRA</div>
+        <button class="btn-mini" onclick="sendSim('comment', 'brazil')">🏃 +1 Tropa</button>
+        <button class="btn-mini" onclick="sendSim('like', 'brazil', 5)">❤️ +5 Taps</button>
+        <button class="btn-mini" onclick="sendGift('brazil', 1, 'Rose')">🌹 Rosa</button>
+        <button class="btn-mini" onclick="sendGift('brazil', 30, 'Donut')">🍩 Dona</button>
+        <button class="btn-mini" onclick="sendGift('brazil', 100, 'Sunglasses')">🕶️ Gafas</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let ws = null;
+    let currentPace = "normal";
+    const connBadge = document.getElementById("conn-badge");
+    const paceLabel = document.getElementById("pace-label");
+
+    function connect() {
+      const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const wsHost = window.location.host || "localhost:8080";
+      ws = new WebSocket(`${wsProtocol}//${wsHost}/ws`);
+
+      ws.onopen = () => {
+        connBadge.className = "status-badge connected";
+        connBadge.innerText = "ONLINE (OBS Conectado)";
+      };
+
+      ws.onclose = () => {
+        connBadge.className = "status-badge";
+        connBadge.innerText = "Reconectando...";
+        setTimeout(connect, 2000);
+      };
+
+      ws.onerror = () => {
+        ws.close();
+      };
+    }
+
+    function sendPayload(payload) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(payload));
+      } else {
+        alert("Reconectando con el servidor...");
+      }
+    }
+
+    function sendControl(action, value) {
+      sendPayload({ type: "control", action, value });
+    }
+
+    function cyclePace() {
+      if (currentPace === "normal") currentPace = "intense";
+      else if (currentPace === "intense") currentPace = "relaxed";
+      else currentPace = "normal";
+
+      paceLabel.innerText = currentPace.toUpperCase();
+      sendControl("set_pace", currentPace);
+    }
+
+    function sendSim(type, team, count = 1) {
+      sendPayload({
+        type: type,
+        team: team,
+        user: "@streamer",
+        count: count,
+        comment: team
+      });
+    }
+
+    function sendGift(team, diamonds, giftName) {
+      sendPayload({
+        type: "gift",
+        team: team,
+        diamonds: diamonds,
+        gift_name: giftName,
+        user: "@vip_fan"
+      });
+    }
+
+    connect();
+  </script>
+</body>
+</html>

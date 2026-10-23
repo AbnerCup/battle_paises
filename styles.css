@@ -1,0 +1,720 @@
+:root {
+  /* Colores patrios oficiales optimizados para alta visibilidad en stream */
+  --color-usa: #104fdf;         /* Azul Old Glory / Bandera USA */
+  --color-usa-glow: rgba(16, 79, 223, 0.75);
+  --color-uk: #d90429;          /* Rojo Royal Union Jack / UK */
+  --color-uk-glow: rgba(217, 4, 41, 0.75);
+  --color-mexico: #008751;      /* Verde Bandera Oficial / México */
+  --color-mexico-glow: rgba(0, 135, 81, 0.75);
+  --color-brazil: #ffb703;      /* Oro Amarillo Canarinha / Brasil */
+  --color-brazil-glow: rgba(255, 183, 3, 0.75);
+
+  --bg-dark: #08090f;
+  --bg-panel: rgba(14, 17, 28, 0.9);
+  --font-main: 'Impact', 'Segoe UI Black', system-ui, sans-serif;
+  --font-text: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: #fff;
+  font-family: var(--font-text);
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* SOLUCIÓN: */
+.container, #game, .arena {
+  width: 1080px;
+  height: 1920px;
+  max-width: none;
+  margin: 0;
+}
+
+/* Contenedor principal adaptable para stream vertical 1080x1920 */
+#stream-container, .container, #game, .arena {
+  position: relative;
+  width: 1080px;
+  height: 1920px;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  background: radial-gradient(circle at 50% 25%, #131726 0%, #06070a 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.95);
+  flex-shrink: 0;
+}
+
+/* Header / HUD Superior (Optimizado para 1080x1920) */
+#hud-header {
+  padding: 24px 28px 18px;
+  background: linear-gradient(180deg, rgba(8, 9, 15, 0.98) 0%, rgba(8, 9, 15, 0.8) 100%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title-and-status {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.title-bar h1 {
+  font-family: var(--font-main);
+  font-size: 2.1rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #104fdf, #d90429, #008751, #ffb703);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+}
+
+.live-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.badge-skirmish {
+  background: rgba(0, 229, 255, 0.15);
+  border: 1.5px solid #00e5ff;
+  color: #00e5ff;
+  box-shadow: 0 0 14px rgba(0, 229, 255, 0.4);
+  animation: pulseBadge 2.2s infinite ease-in-out;
+}
+
+.badge-live {
+  background: rgba(255, 42, 95, 0.2);
+  border: 1.5px solid #ff2a5f;
+  color: #ff5e7e;
+  box-shadow: 0 0 18px rgba(255, 42, 95, 0.6);
+  animation: pulseBadge 1.2s infinite ease-in-out;
+}
+
+@keyframes pulseBadge {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
+.timer-badge {
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  padding: 8px 24px;
+  border-radius: 20px;
+  font-size: 1.6rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #ffde59;
+}
+
+/* Barra de progreso de conquista territorial */
+.territory-bars {
+  display: flex;
+  height: 42px;
+  border-radius: 21px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
+}
+
+.bar-team {
+  height: 100%;
+  transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+}
+
+.bar-usa { background: linear-gradient(90deg, #092c7d, #104fdf); box-shadow: 0 0 16px var(--color-usa-glow); }
+.bar-uk { background: linear-gradient(90deg, #8b001a, #d90429); box-shadow: 0 0 16px var(--color-uk-glow); }
+.bar-mexico { background: linear-gradient(90deg, #005231, #008751); box-shadow: 0 0 16px var(--color-mexico-glow); }
+.bar-brazil { background: linear-gradient(90deg, #d48b00, #ffb703); box-shadow: 0 0 16px var(--color-brazil-glow); }
+
+/* Fila de Tarjetas de los 4 Países */
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.team-card {
+  background: var(--bg-panel);
+  border-radius: 12px;
+  padding: 12px 6px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.team-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+}
+
+.team-usa::before { background: var(--color-usa); box-shadow: 0 0 12px var(--color-usa); }
+.team-uk::before { background: var(--color-uk); box-shadow: 0 0 12px var(--color-uk); }
+.team-mexico::before { background: var(--color-mexico); box-shadow: 0 0 12px var(--color-mexico); }
+.team-brazil::before { background: var(--color-brazil); box-shadow: 0 0 12px var(--color-brazil); }
+
+.team-header-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.team-flag {
+  font-size: 1.8rem;
+}
+
+.team-name {
+  font-family: var(--font-main);
+  font-size: 1.35rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.team-pct {
+  font-family: var(--font-main);
+  font-size: 2.2rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.team-cmd {
+  font-size: 1.05rem;
+  opacity: 0.85;
+  color: #ddd;
+  font-weight: 600;
+}
+
+/* Área Central de Juego (Canvas) */
+#game-stage {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+
+#battle-canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: rgba(4, 5, 8, 0.98);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: block;
+}
+
+/* Banner Flotante para regalos menores (Optimizado para 1080x1920) */
+#alert-banner {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-150px);
+  background: rgba(10, 12, 22, 0.96);
+  border: 4px solid #ffde59;
+  border-radius: 40px;
+  padding: 16px 36px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 0 40px rgba(255, 222, 89, 0.5);
+  z-index: 50;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+  opacity: 0;
+  pointer-events: none;
+  max-width: 90%;
+}
+
+#alert-banner.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.alert-icon { font-size: 3rem; }
+.alert-text { display: flex; flex-direction: column; gap: 4px; }
+.alert-user { font-weight: 900; font-size: 1.6rem; color: #fff; }
+.alert-desc { font-size: 1.3rem; color: #ffde59; font-weight: bold; }
+
+/* ========================================================= */
+/* --- TARJETA DE PODER ANIME / COMIC CUT-IN (1080x1920) ---- */
+/* ========================================================= */
+#anime-cutin-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(1.15) rotate(-2deg);
+  transition: opacity 0.15s ease, transform 0.2s cubic-bezier(0.15, 0.85, 0.35, 1.2);
+  overflow: hidden;
+}
+
+#anime-cutin-overlay.active {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+/* Flash blanco al activar */
+.cutin-flash {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  opacity: 0;
+  z-index: 250;
+  pointer-events: none;
+}
+
+.cutin-flash.flash-now {
+  animation: flashAnim 0.35s ease-out;
+}
+
+@keyframes flashAnim {
+  0% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+/* Fondo con líneas de velocidad cómic / Speedlines radiantes */
+.cutin-speedlines {
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 255, 255, 0.2) 0deg 3deg,
+    transparent 3deg 8deg,
+    rgba(255, 255, 255, 0.35) 8deg 10deg,
+    transparent 10deg 18deg
+  );
+  animation: rotateSpeedlines 4s linear infinite;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+@keyframes rotateSpeedlines {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Contenedor de viñetas de manga diagonales */
+.cutin-panels-wrapper {
+  position: relative;
+  width: 108%;
+  margin-left: -4%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transform: rotate(-5deg);
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.95);
+}
+
+/* Panel Superior: Primer plano de ojos / expresión de grito de poder */
+.cutin-panel-top {
+  position: relative;
+  height: 220px;
+  background: #111;
+  border-top: 8px solid #ffffff;
+  border-bottom: 8px solid #ffffff;
+  overflow: hidden;
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.9);
+}
+
+.cutin-top-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Onomatopeya cómic "BBBMM" / "BOOOM!" */
+.cutin-sfx-text {
+  position: absolute;
+  top: 15px;
+  right: 25px;
+  font-family: var(--font-main);
+  font-size: 5.2rem;
+  font-style: italic;
+  font-weight: 900;
+  color: #fff;
+  -webkit-text-stroke: 4px #000;
+  text-shadow: 6px 6px 0 #000, -3px -3px 0 #000;
+  letter-spacing: -2px;
+  transform: rotate(8deg);
+  z-index: 10;
+  animation: sfxShake 0.15s infinite alternate;
+}
+
+@keyframes sfxShake {
+  0% { transform: rotate(8deg) scale(1); }
+  100% { transform: rotate(10deg) scale(1.08); }
+}
+
+/* Panel Inferior: Pose de cuerpo dinámico volando hacia el frente */
+.cutin-panel-main {
+  position: relative;
+  height: 520px;
+  background: #090a10;
+  border-top: 10px solid #ffffff;
+  border-bottom: 10px solid #ffffff;
+  overflow: hidden;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cutin-hero-art {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ilustración vectorial en SVG de los héroes/guerreros nacionales */
+.hero-svg-art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
+}
+
+/* Frase estilo manga en el pie del panel inferior */
+.cutin-caption-box {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  text-align: center;
+  z-index: 20;
+}
+
+.cutin-quote {
+  font-family: var(--font-main);
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  -webkit-text-stroke: 3px #000000;
+  text-shadow: 4px 4px 0 #000, 0 0 25px currentColor;
+  line-height: 1.15;
+}
+
+.cutin-subquote {
+  font-family: var(--font-text);
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #ffde59;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0 #000;
+  margin-top: 8px;
+}
+
+/* Estilos de fondo temático por país en el corte */
+.cutin-theme-usa { background: radial-gradient(circle, #104fdf 0%, #051447 100%); }
+.cutin-theme-uk { background: radial-gradient(circle, #d90429 0%, #47010c 100%); }
+.cutin-theme-mexico { background: radial-gradient(circle, #008751 0%, #012b1a 100%); }
+.cutin-theme-brazil { background: radial-gradient(circle, #ffb703 0%, #573c00 100%); }
+
+/* Footer del stream (1080x1920) */
+#stream-footer {
+  padding: 16px 24px 20px;
+  background: rgba(8, 9, 15, 0.96);
+  border-top: 2px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10;
+}
+
+/* Dynamic Live CTA Ticker (Engages passive scrollers) */
+.cta-ticker-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 222, 89, 0.4);
+  border-radius: 14px;
+  padding: 10px 18px;
+  box-shadow: 0 0 20px rgba(255, 222, 89, 0.15);
+  transition: all 0.35s ease;
+}
+
+.ticker-icon {
+  font-size: 1.8rem;
+  animation: pulseTickerIcon 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseTickerIcon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.ticker-badge {
+  background: linear-gradient(135deg, #ff2a5f, #ffb703);
+  color: #fff;
+  font-family: var(--font-main);
+  font-size: 1.15rem;
+  font-weight: 900;
+  padding: 4px 12px;
+  border-radius: 8px;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+}
+
+.ticker-text {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.ticker-text.fade-out {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.stream-guide {
+  display: flex;
+  justify-content: space-around;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ddd;
+}
+
+.guide-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guide-key {
+  background: rgba(255, 255, 255, 0.18);
+  padding: 4px 14px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+/* Pantalla de Victoria (1080x1920) */
+#victory-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 5, 8, 0.94);
+  backdrop-filter: blur(14px);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+#victory-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.victory-title {
+  font-family: var(--font-main);
+  font-size: 4.4rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 45px currentColor;
+  text-align: center;
+}
+
+.victory-subtitle {
+  font-size: 2.3rem;
+  color: #eee;
+  text-align: center;
+  font-weight: 600;
+}
+
+.restart-countdown {
+  font-size: 1.8rem;
+  color: #ffde59;
+  font-weight: bold;
+}
+/* Panel de Simulación / Pruebas Flotante */
+#simulator-panel {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  width: 330px;
+  background: rgba(14, 17, 28, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+  padding: 12px;
+  z-index: 999;
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  backdrop-filter: blur(16px);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#simulator-panel.hidden {
+  transform: translateY(120%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sim-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 5px;
+}
+
+.sim-header h3 {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #00e5ff;
+}
+
+.sim-btn-close {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.sim-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sim-section label {
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: #aaa;
+  text-transform: uppercase;
+}
+
+.sim-btn-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+}
+
+.sim-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 6px 6px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.sim-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.sim-btn:active {
+  transform: translateY(1px);
+}
+
+.sim-btn.usa { border-color: var(--color-usa); color: #4da3ff; }
+.sim-btn.uk { border-color: var(--color-uk); color: #ff4d6d; }
+.sim-btn.mexico { border-color: var(--color-mexico); color: #2ec4b6; }
+.sim-btn.brazil { border-color: var(--color-brazil); color: var(--color-brazil); }
+
+.toggle-sim-fab {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  background: linear-gradient(135deg, #104fdf, #d90429);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  z-index: 998;
+  display: none; /* Oculto por defecto para transmisión limpia en stream */
+  align-items: center;
+  gap: 6px;
+}
+
+.toggle-sim-fab.visible {
+  display: flex;
+}
